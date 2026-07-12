@@ -32,6 +32,8 @@ func NewRouter(deps Deps) http.Handler {
 
 	// API v1.
 	api := r.PathPrefix("/api/v1").Subrouter()
+	// JWT auth middleware — protects all /api/v1 routes except login/health.
+	api.Use(deps.JWT.Middleware)
 
 	// System status (cross-platform info).
 	api.HandleFunc("/status", handleSystemStatus(deps)).Methods("GET")

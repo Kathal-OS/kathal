@@ -22,3 +22,4 @@ Thumbs.db
 *.db
 *.db-journal
 gcm-diagnose.log
+test_jwt.py
