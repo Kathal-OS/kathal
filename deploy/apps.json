@@ -1,0 +1,132 @@
+[
+  {
+    "id": "nginx",
+    "name": "Nginx",
+    "description": "High-performance web server and reverse proxy",
+    "icon": "🌐",
+    "dockerImage": "nginx:alpine",
+    "defaultPort": 80,
+    "category": "web",
+    "tags": ["web-server", "reverse-proxy"]
+  },
+  {
+    "id": "caddy",
+    "name": "Caddy",
+    "description": "Automatic HTTPS web server with zero-config",
+    "icon": "🔒",
+    "dockerImage": "caddy:alpine",
+    "defaultPort": 443,
+    "category": "web",
+    "tags": ["web-server", "https"]
+  },
+  {
+    "id": "postgres",
+    "name": "PostgreSQL",
+    "description": "Advanced open-source relational database",
+    "icon": "🐘",
+    "dockerImage": "postgres:16-alpine",
+    "defaultPort": 5432,
+    "category": "database",
+    "tags": ["sql", "database"],
+    "env": {
+      "POSTGRES_PASSWORD": "kathal",
+      "POSTGRES_DB": "app"
+    }
+  },
+  {
+    "id": "mysql",
+    "name": "MySQL",
+    "description": "World's most popular open-source database",
+    "icon": "🐬",
+    "dockerImage": "mysql:8-alpine",
+    "defaultPort": 3306,
+    "category": "database",
+    "tags": ["sql", "database"],
+    "env": {
+      "MYSQL_ROOT_PASSWORD": "kathal",
+      "MYSQL_DATABASE": "app"
+    }
+  },
+  {
+    "id": "redis",
+    "name": "Redis",
+    "description": "In-memory data store for caching and sessions",
+    "icon": "🔴",
+    "dockerImage": "redis:7-alpine",
+    "defaultPort": 6379,
+    "category": "database",
+    "tags": ["cache", "database"]
+  },
+  {
+    "id": "mariadb",
+    "name": "MariaDB",
+    "description": "Community-developed MySQL fork",
+    "icon": "🦭",
+    "dockerImage": "mariadb:11",
+    "defaultPort": 3306,
+    "category": "database",
+    "tags": ["sql", "database"]
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "description": "Document-oriented NoSQL database",
+    "icon": "🍃",
+    "dockerImage": "mongo:7",
+    "defaultPort": 27017,
+    "category": "database",
+    "tags": ["nosql", "database"]
+  },
+  {
+    "id": "portainer",
+    "name": "Portainer",
+    "description": "Docker management UI",
+    "icon": "🐳",
+    "dockerImage": "portainer/portainer-ce:lts",
+    "defaultPort": 9443,
+    "category": "tools",
+    "tags": ["docker", "management"],
+    "volumes": ["/var/run/docker.sock:/var/run/docker.sock"]
+  },
+  {
+    "id": "traefik",
+    "name": "Traefik",
+    "description": "Cloud-native reverse proxy with auto-discovery",
+    "icon": "⚡",
+    "dockerImage": "traefik:v3.0",
+    "defaultPort": 8080,
+    "category": "web",
+    "tags": ["reverse-proxy", "load-balancer"],
+    "volumes": ["/var/run/docker.sock:/var/run/docker.sock"]
+  },
+  {
+    "id": "vaultwarden",
+    "name": "Vaultwarden",
+    "description": "Lightweight Bitwarden-compatible password manager",
+    "icon": "🔐",
+    "dockerImage": "vaultwarden/server:latest",
+    "defaultPort": 80,
+    "category": "apps",
+    "tags": ["password", "security"]
+  },
+  {
+    "id": "gitea",
+    "name": "Gitea",
+    "description": "Self-hosted Git service (lightweight GitHub)",
+    "icon": "📦",
+    "dockerImage": "gitea/gitea:latest",
+    "defaultPort": 3000,
+    "category": "dev",
+    "tags": ["git", "code"]
+  },
+  {
+    "id": "minio",
+    "name": "MinIO",
+    "description": "S3-compatible object storage",
+    "icon": "☁️",
+    "dockerImage": "minio/minio:latest",
+    "defaultPort": 9000,
+    "category": "storage",
+    "tags": ["s3", "object-storage"]
+  }
+]

@@ -1,0 +1,23 @@
+# Binaries
+kathal
+*.exe
+
+# Go
+vendor/
+
+# Node
+web/node_modules/
+web/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data
+*.db
+*.db-journal
