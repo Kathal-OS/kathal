@@ -18,6 +18,9 @@ import (
 	"github.com/bakeweb/kathal-os/internal/metrics"
 	"github.com/bakeweb/kathal-os/internal/proxy"
 	"github.com/bakeweb/kathal-os/internal/store"
+	"github.com/bakeweb/kathal-os/internal/templates"
+	"github.com/bakeweb/kathal-os/internal/gitdeploy"
+	"github.com/bakeweb/kathal-os/internal/terminal"
 )
 
 //go:embed web/dist/*
@@ -61,6 +64,9 @@ func main() {
 	dbMgr := dbmanager.NewManager(cfg.DockerSocket)
 	fileMgr := filemanager.NewManager(dataDir)
 	backupMgr := backup.NewManager(dataDir, cfg.DBPath)
+	templateMgr := templates.NewManager()
+	gitDeployMgr := gitdeploy.NewManager(dataDir)
+	terminalMgr := terminal.NewManager()
 
 	deps := api.Deps{
 		Config:    cfg,
@@ -72,6 +78,9 @@ func main() {
 		DBManager: dbMgr,
 		Files:     fileMgr,
 		Backup:    backupMgr,
+		Templates: templateMgr,
+		GitDeploy: gitDeployMgr,
+		Terminal:  terminalMgr,
 	}
 
 	router := api.NewRouter(deps)

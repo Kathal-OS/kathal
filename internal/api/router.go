@@ -3,6 +3,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"runtime"
@@ -19,6 +20,9 @@ import (
 	"github.com/bakeweb/kathal-os/internal/metrics"
 	"github.com/bakeweb/kathal-os/internal/proxy"
 	"github.com/bakeweb/kathal-os/internal/store"
+	"github.com/bakeweb/kathal-os/internal/templates"
+	"github.com/bakeweb/kathal-os/internal/gitdeploy"
+	"github.com/bakeweb/kathal-os/internal/terminal"
 	"github.com/gorilla/mux"
 )
 
@@ -33,6 +37,9 @@ type Deps struct {
 	DBManager *dbmanager.Manager
 	Files     *filemanager.Manager
 	Backup    *backup.Manager
+	Templates *templates.Manager
+	GitDeploy *gitdeploy.Manager
+	Terminal  *terminal.Manager
 }
 
 // NewRouter creates the main HTTP router.
@@ -106,6 +113,24 @@ func NewRouter(deps Deps) http.Handler {
 	api.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{"status": "ok"})
 	}).Methods("GET")
+
+	// === SERVICE TEMPLATES ===
+	api.HandleFunc("/templates", handleListTemplates(deps)).Methods("GET")
+	api.HandleFunc("/templates/search", handleSearchTemplates(deps)).Methods("GET")
+	api.HandleFunc("/templates/categories", handleTemplateCategories(deps)).Methods("GET")
+	api.HandleFunc("/templates/{id}", handleGetTemplate(deps)).Methods("GET")
+
+	// === GIT DEPLOYMENT ===
+	api.HandleFunc("/git/repos", handleListGitRepos(deps)).Methods("GET")
+	api.HandleFunc("/git/repos", handleAddGitRepo(deps)).Methods("POST")
+	api.HandleFunc("/git/repos/{id}/deploy", handleDeployGitRepo(deps)).Methods("POST")
+	api.HandleFunc("/git/repos/{id}/history", handleGitDeployHistory(deps)).Methods("GET")
+	api.HandleFunc("/git/webhook", handleGitWebhook(deps)).Methods("POST")
+
+	// === WEB TERMINAL ===
+	api.HandleFunc("/terminal/sessions", handleCreateTerminalSession(deps)).Methods("POST")
+	api.HandleFunc("/terminal/sessions/{id}", handleDeleteTerminalSession(deps)).Methods("DELETE")
+	api.HandleFunc("/terminal/ws/{id}", handleTerminalWebSocket(deps)).Methods("GET")
 
 	// Login (public — no JWT required).
 	api.HandleFunc("/login", handleLogin(deps)).Methods("POST")
@@ -951,6 +976,201 @@ func (l *loginLimiter) recordSuccess(email string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	delete(l.attempts, email)
+}
+
+// ==================== TEMPLATE HANDLERS ====================
+
+func handleListTemplates(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Templates == nil {
+			writeJSON(w, []interface{}{})
+			return
+		}
+		cat := templates.Category(r.URL.Query().Get("category"))
+		writeJSON(w, deps.Templates.List(cat))
+	}
+}
+
+func handleSearchTemplates(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Templates == nil {
+			writeJSON(w, []interface{}{})
+			return
+		}
+		q := r.URL.Query().Get("q")
+		writeJSON(w, deps.Templates.Search(q))
+	}
+}
+
+func handleTemplateCategories(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Templates == nil {
+			writeJSON(w, map[string]int{})
+			return
+		}
+		writeJSON(w, deps.Templates.Categories())
+	}
+}
+
+func handleGetTemplate(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Templates == nil {
+			writeError(w, http.StatusServiceUnavailable, "templates not available")
+			return
+		}
+		id := mux.Vars(r)["id"]
+		t, ok := deps.Templates.Get(id)
+		if !ok {
+			writeError(w, http.StatusNotFound, "template not found")
+			return
+		}
+		writeJSON(w, t)
+	}
+}
+
+// ==================== GIT DEPLOY HANDLERS ====================
+
+func handleListGitRepos(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.GitDeploy == nil {
+			writeJSON(w, []interface{}{})
+			return
+		}
+		writeJSON(w, deps.GitDeploy.ListRepos())
+	}
+}
+
+func handleAddGitRepo(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.GitDeploy == nil {
+			writeError(w, http.StatusServiceUnavailable, "git deploy not available")
+			return
+		}
+		var req struct {
+			Name      string `json:"name"`
+			URL       string `json:"url"`
+			Branch    string `json:"branch"`
+			DeployCmd string `json:"deploy_cmd"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeError(w, http.StatusBadRequest, "invalid JSON")
+			return
+		}
+		repo, err := deps.GitDeploy.AddRepo(req.Name, req.URL, req.Branch, req.DeployCmd)
+		if err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		writeJSON(w, repo)
+	}
+}
+
+func handleDeployGitRepo(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.GitDeploy == nil {
+			writeError(w, http.StatusServiceUnavailable, "git deploy not available")
+			return
+		}
+		id := mux.Vars(r)["id"]
+		result, err := deps.GitDeploy.Deploy(id)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		writeJSON(w, result)
+	}
+}
+
+func handleGitDeployHistory(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.GitDeploy == nil {
+			writeJSON(w, []interface{}{})
+			return
+		}
+		id := mux.Vars(r)["id"]
+		writeJSON(w, deps.GitDeploy.GetDeployHistory(id))
+	}
+}
+
+func handleGitWebhook(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.GitDeploy == nil {
+			writeError(w, http.StatusServiceUnavailable, "git deploy not available")
+			return
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to read body")
+			return
+		}
+		repoID, err := deps.GitDeploy.HandleWebhook(body)
+		if err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		writeJSON(w, map[string]string{"repo_id": repoID, "status": "triggered"})
+	}
+}
+
+// ==================== WEB TERMINAL HANDLERS ====================
+
+func handleCreateTerminalSession(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Terminal == nil {
+			writeError(w, http.StatusServiceUnavailable, "terminal not available")
+			return
+		}
+		var req struct {
+			ID   string `json:"id"`
+			Cols uint16 `json:"cols"`
+			Rows uint16 `json:"rows"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeError(w, http.StatusBadRequest, "invalid JSON")
+			return
+		}
+		if req.ID == "" {
+			req.ID = fmt.Sprintf("term-%d", time.Now().UnixMilli())
+		}
+		if req.Cols == 0 {
+			req.Cols = 80
+		}
+		if req.Rows == 0 {
+			req.Rows = 24
+		}
+		sess, err := deps.Terminal.CreateSession(req.ID, req.Cols, req.Rows)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		writeJSON(w, sess)
+	}
+}
+
+func handleDeleteTerminalSession(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Terminal == nil {
+			writeError(w, http.StatusServiceUnavailable, "terminal not available")
+			return
+		}
+		id := mux.Vars(r)["id"]
+		if err := deps.Terminal.CloseSession(id); err != nil {
+			writeError(w, http.StatusNotFound, err.Error())
+			return
+		}
+		writeJSON(w, map[string]string{"status": "closed"})
+	}
+}
+
+func handleTerminalWebSocket(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if deps.Terminal == nil {
+			writeError(w, http.StatusServiceUnavailable, "terminal not available")
+			return
+		}
+		id := mux.Vars(r)["id"]
+		deps.Terminal.HandleWebSocket(w, r, id)
+	}
 }
 
 // ==================== HELPERS ====================

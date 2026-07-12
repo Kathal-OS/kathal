@@ -3,10 +3,12 @@ module github.com/bakeweb/kathal-os
 go 1.25.1
 
 require (
+	github.com/creack/pty v1.1.24
 	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-connections v0.7.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/gorilla/mux v1.8.1
+	github.com/gorilla/websocket v1.5.3
 	github.com/shirou/gopsutil/v3 v3.24.5
 	modernc.org/sqlite v1.34.5
 )

@@ -8,6 +8,9 @@ import ProxyManager from './pages/ProxyManager'
 import Databases from './pages/Databases'
 import FileManager from './pages/FileManager'
 import Backups from './pages/Backups'
+import Templates from './pages/Templates'
+import GitDeploy from './pages/GitDeploy'
+import Terminal from './pages/Terminal'
 import Settings from './pages/Settings'
 
 const nav = [
@@ -18,6 +21,9 @@ const nav = [
   { to: '/databases',  icon: '🗄️', label: 'Databases' },
   { to: '/files',      icon: '📂', label: 'Files' },
   { to: '/backups',    icon: '💾', label: 'Backups' },
+  { to: '/templates',  icon: '🧩', label: 'Templates' },
+  { to: '/git',        icon: '📦', label: 'Git Deploy' },
+  { to: '/terminal',   icon: '💻', label: 'Terminal' },
   { to: '/settings',   icon: '⚙️', label: 'Settings' },
 ]
 
@@ -126,6 +132,9 @@ export default function App() {
           <Route path="/databases" element={<ProtectedRoute token={token}><Databases /></ProtectedRoute>} />
           <Route path="/files" element={<ProtectedRoute token={token}><FileManager /></ProtectedRoute>} />
           <Route path="/backups" element={<ProtectedRoute token={token}><Backups /></ProtectedRoute>} />
+          <Route path="/templates" element={<ProtectedRoute token={token}><Templates /></ProtectedRoute>} />
+          <Route path="/git" element={<ProtectedRoute token={token}><GitDeploy /></ProtectedRoute>} />
+          <Route path="/terminal" element={<ProtectedRoute token={token}><Terminal /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute token={token}><Settings /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
