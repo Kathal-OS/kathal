@@ -84,10 +84,6 @@ ca-certificates
 gnupg
 lsb-release
 
-# Docker
-docker.io
-docker-compose-v2
-
 # Dashboard dependencies
 systemd
 network-manager
@@ -111,49 +107,39 @@ set -euo pipefail
 
 echo "[kathal-iso] Installing KATHAL dashboard..."
 
-# Enable Docker.
-systemctl enable docker
-systemctl enable docker.service
-systemctl enable docker.socket
-
 # Add default user.
-useradd -m -s /bin/bash -G sudo,docker kathal
+useradd -m -s /bin/bash -G sudo kathal
 echo "kathal:kathal" | chpasswd
 echo "kathal ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kathal
 
 # Create data directory.
 mkdir -p /opt/kathal/data
 
-# Pre-download the KATHAL image (or copy from build context).
-# In production, this would be: docker pull ghcr.io/bakeweb/kathal-os:latest
-# For now, we embed the binary directly.
+# Copy the binary if available from build context.
 if [ -f /tmp/kathal-binary ]; then
     cp /tmp/kathal-binary /opt/kathal/kathal
     chmod +x /opt/kathal/kathal
 fi
 
-# Create systemd service for KATHAL.
+# Create systemd service — runs binary directly (Docker-optional).
 cat > /etc/systemd/system/kathal.service << 'SERVICEEOF'
 [Unit]
 Description=KATHAL OS Dashboard
-After=docker.service
-Requires=docker.service
+After=network.target
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker stop kathal
-ExecStartPre=-/usr/bin/docker rm kathal
-ExecStart=/usr/bin/docker run -d \
-  --name kathal \
-  --restart unless-stopped \
-  -p 8080:8080 \
-  -v /opt/kathal/data:/data \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -e KATHAL_JWT_SECRET=$(openssl rand -hex 32) \
-  ghcr.io/bakeweb/kathal-os:latest
-ExecStop=/usr/bin/docker stop kathal
+ExecStart=/opt/kathal/kathal
+WorkingDirectory=/opt/kathal
 Restart=always
 RestartSec=5
+Environment=KATHAL_HTTP_ADDR=:8080
+Environment=KATHAL_DB_PATH=/opt/kathal/data/kathal.db
+
+# Security hardening.
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/kathal/data
 
 [Install]
 WantedBy=multi-user.target
@@ -186,7 +172,7 @@ cat > /etc/motd << 'MOTDEOF'
   Welcome to KATHAL OS!
 
   Dashboard: http://localhost:8080
-  Default login: kathal / kathal
+  Default login: admin@kathal.local / kathal
 
   Quick commands:
     kathal-status  — Check dashboard status
@@ -207,7 +193,15 @@ if [ -f "$KATHAL_BINARY" ]; then
     chmod +x config/includes.chroot/opt/kathal/kathal
     log "KATHAL binary included"
 else
-    log "KATHAL binary not found — will be pulled via Docker at first boot"
+    # Check dist/ for release binary.
+    RELEASE_BIN="../dist/kathal-${KATHAL_VERSION}-linux-amd64"
+    if [ -f "$RELEASE_BIN" ]; then
+        cp "$RELEASE_BIN" config/includes.chroot/opt/kathal/kathal
+        chmod +x config/includes.chroot/opt/kathal/kathal
+        log "KATHAL release binary included from dist/"
+    else
+        log "KATHAL binary not found — will need manual install after boot"
+    fi
 fi
 
 # Step 5: Build ISO.
@@ -232,7 +226,7 @@ if [ -n "$ISO_FILE" ]; then
     echo -e "  Arch: amd64"
     echo ""
     echo -e "  Next steps:"
-    echo -e "    1. Flash to USB: ${YELLOW}sudo dd if=${ISO_NAME}.iso of=/dev/sdX bs=4M status=progress${NC}"
+    echo -e "    1. Flash to USB: sudo dd if=${ISO_NAME}.iso of=/dev/sdX bs=4M status=progress"
     echo -e "    2. Boot from USB"
     echo -e "    3. Open http://localhost:8080"
     echo ""

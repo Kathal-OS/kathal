@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  kathal:
+    build: .
+    container_name: kathal
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - kathal-data:/data
+    environment:
+      - KATHAL_HTTP_ADDR=:8080
+      - KATHAL_DB_PATH=/data/kathal.db
+
+volumes:
+  kathal-data:

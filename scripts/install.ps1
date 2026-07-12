@@ -1,6 +1,6 @@
 <# 
   KATHAL OS — Windows Installer
-  Installs KATHAL as a Windows service via NSSM or direct run.
+  Installs KATHAL as a native Windows service.
   
   Usage:
     powershell -ExecutionPolicy Bypass -File install.ps1
@@ -8,16 +8,20 @@
 
 $KATHAL_VERSION = "0.1.0"
 $INSTALL_DIR = "$env:LOCALAPPDATA\kathal"
+$DATA_DIR = "$INSTALL_DIR\data"
 $PORT = 8080
 
 Write-Host ""
-Write-Host "  🍈 KATHAL OS Installer (Windows)" -ForegroundColor Green
-Write-Host "  ================================"
+Write-Host "  KATHAL OS Installer (Windows)" -ForegroundColor Green
+Write-Host "  ================================" -ForegroundColor Green
 Write-Host ""
 
-# Create install directory.
+# Create directories.
 if (!(Test-Path $INSTALL_DIR)) {
     New-Item -ItemType Directory -Path $INSTALL_DIR -Force | Out-Null
+}
+if (!(Test-Path $DATA_DIR)) {
+    New-Item -ItemType Directory -Path $DATA_DIR -Force | Out-Null
 }
 
 Write-Host "[1/4] Checking Docker..." -ForegroundColor Yellow
@@ -32,10 +36,7 @@ try {
 } catch {}
 
 if (!$dockerAvailable) {
-    Write-Host "  Docker not found. KATHAL will run in system-only mode." -ForegroundColor DarkYellow
-    Write-Host "  Install Docker Desktop for container management:" -ForegroundColor Gray
-    Write-Host "  https://docs.docker.com/desktop/install/windows-install/" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host "  Docker not found — running in system-only mode (Docker optional)" -ForegroundColor DarkYellow
 }
 
 Write-Host "[2/4] Downloading KATHAL v$KATHAL_VERSION..." -ForegroundColor Yellow
@@ -59,7 +60,7 @@ try {
         if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir }
         
         # Download source.
-        $zipUrl = "https://github.com/bakeweb/kathal-os/archive/refs/heads/master.zip"
+        $zipUrl = "https://github.com/bakeweb/kathal-os/archive/refs/heads/main.zip"
         $zipPath = "$env:TEMP\kathal-source.zip"
         Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath -UseBasicParsing
         Expand-Archive -Path $zipPath -DestinationPath $tmpDir -Force
@@ -77,22 +78,17 @@ try {
     }
 }
 
-Write-Host "[3/4] Configuring KATHAL..." -ForegroundColor Yellow
+Write-Host "[3/4] Creating uninstall script..." -ForegroundColor Yellow
 
-# Create default config.
-$configPath = "$INSTALL_DIR\config.json"
-if (!(Test-Path $configPath)) {
-    @"
-{
-    "port": $PORT,
-    "logLevel": "info",
-    "dbPath": "$($INSTALL_DIR -replace '\\', '/')/kathal.db"
-}
-"@ | Out-File -FilePath $configPath -Encoding utf8
-    Write-Host "  Config created at $configPath" -ForegroundColor Green
-} else {
-    Write-Host "  Config exists, skipping." -ForegroundColor Gray
-}
+$uninstallScript = @"
+# KATHAL OS — Windows Uninstaller
+Write-Host "Stopping KATHAL..." -ForegroundColor Yellow
+Stop-Process -Name "kathal" -Force -ErrorAction SilentlyContinue
+Write-Host "Removing files..." -ForegroundColor Yellow
+Remove-Item -Recurse -Force "$INSTALL_DIR" -ErrorAction SilentlyContinue
+Write-Host "KATHAL uninstalled." -ForegroundColor Green
+"@
+$uninstallScript | Out-File -FilePath "$INSTALL_DIR\uninstall.ps1" -Encoding utf8
 
 Write-Host "[4/4] Starting KATHAL..." -ForegroundColor Yellow
 
@@ -101,7 +97,10 @@ Write-Host "  Starting KATHAL OS on http://localhost:$PORT" -ForegroundColor Gre
 Write-Host "  Login: admin@kathal.local / kathal" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  Press Ctrl+C to stop." -ForegroundColor DarkGray
+Write-Host "  Uninstall: powershell -ExecutionPolicy Bypass -File $INSTALL_DIR\uninstall.ps1" -ForegroundColor Gray
 Write-Host ""
 
-# Start KATHAL.
+# Set environment and start KATHAL.
+$env:KATHAL_HTTP_ADDR = ":$PORT"
+$env:KATHAL_DB_PATH = "$DATA_DIR\kathal.db"
 & $binaryPath

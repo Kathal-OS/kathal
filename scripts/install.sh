@@ -3,20 +3,19 @@
 # Installs KATHAL dashboard on Ubuntu/Debian/Fedora/Arch.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/bakeweb/kathal-os/master/scripts/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/bakeweb/kathal-os/main/scripts/install.sh | sudo bash
 #   Or: sudo bash scripts/install.sh
 
 set -e
 
 VERSION="0.1.0"
 INSTALL_DIR="/opt/kathal"
-CONFIG_DIR="/etc/kathal"
 DATA_DIR="/var/lib/kathal"
 PORT=8080
 
 echo ""
-echo "  🍈 KATHAL OS Installer (Linux)"
-echo "  =============================="
+echo "  KATHAL OS Installer (Linux)"
+echo "  ============================"
 echo ""
 
 # Detect distro.
@@ -31,7 +30,7 @@ echo "  Detected: $DISTRO"
 echo ""
 echo "[1/6] Checking dependencies..."
 
-# Check Docker.
+# Check Docker (optional).
 DOCKER_AVAILABLE=false
 if command -v docker &>/dev/null; then
     DOCKER_VERSION=$(docker version --format '{{.Server.Version}}' 2>/dev/null || true)
@@ -42,26 +41,13 @@ if command -v docker &>/dev/null; then
 fi
 
 if [ "$DOCKER_AVAILABLE" = false ]; then
-    echo "  Docker not found. KATHAL will run in system-only mode."
-    echo "  Install Docker for container management:"
-    case "$DISTRO" in
-        ubuntu|debian)
-            echo "    sudo apt-get install docker.io"
-            ;;
-        fedora|rhel|centos)
-            echo "    sudo dnf install docker"
-            ;;
-        arch)
-            echo "    sudo pacman -S docker"
-            ;;
-    esac
-    echo ""
+    echo "  Docker not found — running in system-only mode (Docker optional)"
 fi
 
 echo ""
 echo "[2/6] Downloading KATHAL v$VERSION..."
 
-mkdir -p "$INSTALL_DIR" "$CONFIG_DIR" "$DATA_DIR"
+mkdir -p "$INSTALL_DIR" "$DATA_DIR"
 
 # Detect architecture.
 ARCH=$(uname -m)
@@ -80,17 +66,17 @@ if curl -fsSL -o "$BINARY" "$DOWNLOAD_URL" 2>/dev/null; then
     echo "  Downloaded pre-built binary"
 else
     echo "  Pre-built binary not available, building from source..."
-    
+
     if ! command -v go &>/dev/null; then
         echo "  Installing Go..."
         curl -fsSL https://go.dev/dl/go1.22.5.linux-${ARCH_NAME}.tar.gz | sudo tar -C /usr/local -xz
         export PATH=$PATH:/usr/local/go/bin
         echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile.d/kathal.sh
     fi
-    
+
     TMPDIR=$(mktemp -d)
     cd "$TMPDIR"
-    curl -fsSL "https://github.com/bakeweb/kathal-os/archive/refs/heads/master.tar.gz" | tar xz
+    curl -fsSL "https://github.com/bakeweb/kathal-os/archive/refs/heads/main.tar.gz" | tar xz
     cd kathal-os-*
     go build -o "$BINARY" ./cmd/kathal
     cd /
@@ -101,18 +87,7 @@ fi
 echo ""
 echo "[3/6] Creating configuration..."
 
-if [ ! -f "$CONFIG_DIR/config.json" ]; then
-    cat > "$CONFIG_DIR/config.json" << EOF
-{
-    "port": $PORT,
-    "logLevel": "info",
-    "dbPath": "$DATA_DIR/kathal.db"
-}
-EOF
-    echo "  Config created at $CONFIG_DIR/config.json"
-else
-    echo "  Config exists, skipping"
-fi
+# No config file needed — KATHAL reads env vars directly.
 
 echo ""
 echo "[4/6] Creating systemd service..."
@@ -120,8 +95,7 @@ echo "[4/6] Creating systemd service..."
 cat > /etc/systemd/system/kathal.service << EOF
 [Unit]
 Description=KATHAL OS Dashboard
-After=network.target docker.service
-Wants=docker.service
+After=network.target
 
 [Service]
 Type=simple
@@ -129,8 +103,8 @@ ExecStart=$BINARY
 WorkingDirectory=$DATA_DIR
 Restart=always
 RestartSec=5
-Environment=KATHAL_PORT=$PORT
-Environment=KATHAL_DB=$DATA_DIR/kathal.db
+Environment=KATHAL_HTTP_ADDR=:$PORT
+Environment=KATHAL_DB_PATH=$DATA_DIR/kathal.db
 
 # Security hardening.
 NoNewPrivileges=true
@@ -146,12 +120,9 @@ systemctl daemon-reload
 echo "  Service created"
 
 echo ""
-echo "[5/6] Creating user and setting permissions..."
+echo "[5/6] Setting permissions..."
 
-if ! id -u kathal &>/dev/null; then
-    sudo useradd -r -s /bin/false -d "$DATA_DIR" kathal 2>/dev/null || true
-fi
-chown -R kathal:kathal "$DATA_DIR" 2>/dev/null || true
+chown -R root:root "$DATA_DIR" 2>/dev/null || true
 
 echo ""
 echo "[6/6] Starting KATHAL..."
@@ -164,7 +135,7 @@ sleep 2
 
 if systemctl is-active --quiet kathal; then
     echo ""
-    echo "  ✅ KATHAL OS is running!"
+    echo "  KATHAL OS is running!"
     echo ""
     echo "  Dashboard: http://localhost:$PORT"
     echo "  Login:     admin@kathal.local / kathal"
@@ -179,7 +150,7 @@ if systemctl is-active --quiet kathal; then
     echo ""
 else
     echo ""
-    echo "  ⚠️  KATHAL failed to start. Check logs:"
+    echo "  KATHAL failed to start. Check logs:"
     echo "    journalctl -u kathal -n 50"
     echo ""
 fi
