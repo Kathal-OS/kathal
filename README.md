@@ -11,18 +11,18 @@ Like CasaOS, but simpler. One binary, one browser tab, manage everything.
 docker run -d --name kathal --restart unless-stopped \
   -p 8080:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/bakeweb/kathal-os:latest
+  ghcr.io/shruhood/kathal:latest
 ```
 Open http://localhost:8080
 
 ### Linux (Ubuntu/Debian/Fedora/Arch)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bakeweb/kathal-os/master/scripts/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/shruhood/kathal/master/scripts/install.sh | sudo bash
 ```
 
 ### macOS
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bakeweb/kathal-os/master/scripts/install-mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/shruhood/kathal/master/scripts/install-mac.sh | bash
 ```
 
 ### Windows
