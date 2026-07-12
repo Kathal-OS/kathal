@@ -4,7 +4,9 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/bakeweb/kathal-os/internal/auth"
 	"github.com/bakeweb/kathal-os/internal/config"
 	"github.com/bakeweb/kathal-os/internal/docker"
 	"github.com/bakeweb/kathal-os/internal/metrics"
@@ -18,6 +20,7 @@ type Deps struct {
 	Store   *store.DB
 	Docker  *docker.Client
 	Metrics *metrics.Collector
+	JWT     *auth.JWT
 }
 
 // NewRouter creates the main HTTP router.
@@ -53,6 +56,9 @@ func NewRouter(deps Deps) http.Handler {
 	api.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{"status": "ok"})
 	}).Methods("GET")
+
+	// Login (public).
+	api.HandleFunc("/login", handleLogin(deps)).Methods("POST")
 
 	// Serve static files (React build) — catch-all for frontend routes.
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("web/dist")))
@@ -234,6 +240,49 @@ func handleDeleteApp(deps Deps) http.HandlerFunc {
 			return
 		}
 		writeJSON(w, map[string]string{"status": "deleted"})
+	}
+}
+
+// --- Login Handler ---
+
+func handleLogin(deps Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeError(w, http.StatusBadRequest, "invalid JSON")
+			return
+		}
+
+		// For now, accept any email with password "kathal" or the default admin.
+		// In production, this should check the database.
+		if req.Password != "kathal" && req.Password != "admin" {
+			writeError(w, http.StatusUnauthorized, "invalid credentials")
+			return
+		}
+
+		email := req.Email
+		if email == "" {
+			email = "admin@kathal.local"
+		}
+
+		// Generate token.
+		token, err := deps.JWT.GenerateToken("admin", email, "admin", 72*time.Hour)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to generate token")
+			return
+		}
+
+		writeJSON(w, map[string]interface{}{
+			"token": token,
+			"user": map[string]string{
+				"id":    "admin",
+				"email": email,
+				"role":  "admin",
+			},
+		})
 	}
 }
 

@@ -1,17 +1,59 @@
-import { Routes, Route, NavLink, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Routes, Route, NavLink, Navigate } from 'react-router-dom'
+import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Containers from './pages/Containers'
 import Images from './pages/Images'
 import Settings from './pages/Settings'
 
 const nav = [
-  { to: '/',         icon: '📊', label: 'Dashboard' },
+  { to: '/',          icon: '📊', label: 'Dashboard' },
   { to: '/containers', icon: '🐳', label: 'Containers' },
   { to: '/images',    icon: '📦', label: 'Images' },
   { to: '/settings',  icon: '⚙️',  label: 'Settings' },
 ]
 
+function ProtectedRoute({ children, token }) {
+  if (!token) return <Navigate to="/login" replace />
+  return children
+}
+
 export default function App() {
+  const [token, setToken] = useState(null)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('kathal_token')
+    const savedUser = localStorage.getItem('kathal_user')
+    if (savedToken) {
+      setToken(savedToken)
+      try { setUser(JSON.parse(savedUser)) } catch {}
+    }
+  }, [])
+
+  function handleLogin(newToken, newUser) {
+    setToken(newToken)
+    setUser(newUser)
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('kathal_token')
+    localStorage.removeItem('kathal_user')
+    setToken(null)
+    setUser(null)
+  }
+
+  // Login page (no sidebar).
+  if (!token) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    )
+  }
+
+  // Main app with sidebar.
   return (
     <div className="flex h-screen bg-gray-950">
       {/* Sidebar */}
@@ -48,19 +90,32 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Footer */}
+        {/* User */}
         <div className="p-4 border-t border-gray-800">
-          <p className="text-xs text-gray-600">KATHAL v0.1.0</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">{user?.email || 'admin'}</p>
+              <p className="text-xs text-gray-600">KATHAL v0.1.0</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-gray-500 hover:text-red-400 transition-colors text-sm"
+              title="Logout"
+            >
+              🚪
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/containers" element={<Containers />} />
-          <Route path="/images" element={<Images />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/" element={<ProtectedRoute token={token}><Dashboard /></ProtectedRoute>} />
+          <Route path="/containers" element={<ProtectedRoute token={token}><Containers /></ProtectedRoute>} />
+          <Route path="/images" element={<ProtectedRoute token={token}><Images /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute token={token}><Settings /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
