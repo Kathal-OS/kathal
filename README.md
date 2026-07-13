@@ -4,10 +4,10 @@
 
 # 🍈 KATHAL OS
 
-### Portable, self-hosted OS with a web dashboard
+### A production-grade, AI-powered, open-source Infrastructure Operating System
 
-**Runs on Windows, Linux, and Mac — like CasaOS, but simpler.**
-*One binary, one browser tab, manage everything.*
+**Transforms any computer into a secure, portable hosting and development platform.**
+*Docker, cloud, AI, DevOps, automation, and plugins — one unified ecosystem.*
 
 <p>
 <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
@@ -15,36 +15,60 @@
 <img src="https://img.shields.io/badge/node-18%2B-339933?style=flat-square&logo=node.js&logoColor=white" />
 <img src="https://img.shields.io/badge/docker-optional-2496ED?style=flat-square&logo=docker&logoColor=white" />
 <img src="https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Docker-lightgrey?style=flat-square" />
+<img src="https://img.shields.io/github/stars/Kathal-OS/Kathal?style=flat-square&color=yellow" />
 </p>
 
 <p>
-<a href="https://github.com/Kathal-OS/kathal"><b>Repository</b></a> •
-<a href="https://github.com/Kathal-OS/kathal/issues"><b>Issues</b></a> •
-<a href="https://github.com/Kathal-OS/kathal/discussions"><b>Discussions</b></a> •
-<a href="https://github.com/Kathal-OS/kathal/releases"><b>Releases</b></a> •
-<a href="https://github.com/Kathal-OS/kathal/pkgs/container/kathal"><b>Docker Images</b></a>
+<a href="https://github.com/Kathal-OS/Kathal"><b>Repository</b></a> •
+<a href="https://github.com/Kathal-OS/Kathal/issues"><b>Issues</b></a> •
+<a href="https://github.com/Kathal-OS/Kathal/discussions"><b>Discussions</b></a> •
+<a href="https://github.com/Kathal-OS/Kathal/releases"><b>Releases</b></a> •
+<a href="https://github.com/orgs/Kathal-OS/packages?repo_name=Kathal"><b>Packages</b></a>
 </p>
 
 </div>
 
 <br/>
 
----
+<div align="center">
+<img width="768" height="512" alt="KATHAL OS dashboard" src="https://github.com/user-attachments/assets/6ac92321-e410-487a-a869-e9d223f3e870" />
+</div>
 
-<img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/6ac92321-e410-487a-a869-e9d223f3e870" />
+<br/>
+
+---
 
 ## 📖 Table of Contents
 
-- [Quick Start](#-quick-start)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Platform Support](#-platform-support)
-- [Development](#-development)
-- [API Endpoints](#-api-endpoints)
-- [Configuration](#-configuration)
-- [Uninstall](#-uninstall)
-- [Links](#-links)
-- [License](#-license)
+<table>
+<tr>
+<td valign="top" width="33%">
+
+**Get Running**
+- ⚡ [Quick Start](#-quick-start)
+- ✨ [Features](#-features)
+- 🖥️ [Platform Support](#-platform-support)
+
+</td>
+<td valign="top" width="33%">
+
+**Build & Extend**
+- 🏗️ [Architecture](#-architecture)
+- 🛠️ [Development](#-development)
+- 🔌 [API Endpoints](#-api-endpoints)
+- ⚙️ [Configuration](#-configuration)
+
+</td>
+<td valign="top" width="33%">
+
+**Reference**
+- 🗑️ [Uninstall](#-uninstall)
+- 🔗 [Links](#-links)
+- 📄 [License](#-license)
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -110,27 +134,22 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 ## 🏗️ Architecture
 
+```mermaid
+flowchart TD
+    A["React dashboard<br/>Vite + Tailwind + React"] --> B
+
+    subgraph B["Go backend"]
+        direction LR
+        C["API<br/>Routing"]
+        D["Auth<br/>Sessions"]
+        E["Metrics<br/>System stats"]
+    end
+
+    B --> F[("SQLite<br/>modernc")]
+    F --> G["Docker + gopsutil<br/>optional runtime, system metrics"]
 ```
-┌─────────────────────────────────────┐
-│         React Dashboard             │
-│    (Vite + Tailwind + React)        │
-├─────────────────────────────────────┤
-│         Go Backend                  │
-│  ┌──────┐ ┌──────┐ ┌──────────┐    │
-│  │ API  │ │ Auth │ │ Metrics  │    │
-│  └──┬───┘ └──┬───┘ └────┬─────┘    │
-│     └────────┼──────────┘          │
-│              │                      │
-│  ┌───────────┴────────────┐        │
-│  │    SQLite (modernc)    │        │
-│  └────────────────────────┘        │
-│              │                      │
-│  ┌───────────┴────────────┐        │
-│  │  Docker (optional)     │        │
-│  │  gopsutil (system)     │        │
-│  └────────────────────────┘        │
-└─────────────────────────────────────┘
-```
+
+GitHub renders this Mermaid block natively, so it shows up as an actual diagram — not ASCII art — right on the repo page.
 
 ---
 
@@ -353,11 +372,11 @@ Remove-Item -Recurse "$env:LOCALAPPDATA\kathal"
 
 <div align="center">
 
-<a href="https://github.com/Kathal-OS/kathal"><img src="https://img.shields.io/badge/Repository-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
-<a href="https://github.com/Kathal-OS/kathal/issues"><img src="https://img.shields.io/badge/Issues-red?style=for-the-badge&logo=github&logoColor=white" /></a>
-<a href="https://github.com/Kathal-OS/kathal/discussions"><img src="https://img.shields.io/badge/Discussions-blue?style=for-the-badge&logo=github&logoColor=white" /></a>
-<a href="https://github.com/Kathal-OS/kathal/releases"><img src="https://img.shields.io/badge/Releases-green?style=for-the-badge&logo=github&logoColor=white" /></a>
-<a href="https://github.com/Kathal-OS/kathal/pkgs/container/kathal"><img src="https://img.shields.io/badge/Docker%20Images-2496ED?style=for-the-badge&logo=docker&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/Kathal"><img src="https://img.shields.io/badge/Repository-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/Kathal/issues"><img src="https://img.shields.io/badge/Issues-red?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/Kathal/discussions"><img src="https://img.shields.io/badge/Discussions-blue?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/Kathal/releases"><img src="https://img.shields.io/badge/Releases-green?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/orgs/Kathal-OS/packages?repo_name=Kathal"><img src="https://img.shields.io/badge/Docker%20Images-2496ED?style=for-the-badge&logo=docker&logoColor=white" /></a>
 
 </div>
 
@@ -370,5 +389,6 @@ Remove-Item -Recurse "$env:LOCALAPPDATA\kathal"
 **MIT** — Built for the community.
 
 🍈 **KATHAL OS**
+Built by **BakeWeb** in collaboration with **SunDial Technology**
 
 </div>
