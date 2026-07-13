@@ -37,6 +37,7 @@
 <br/>
 
 ---
+<div align="center">
 
 ## 📖 Table of Contents
 
@@ -148,8 +149,6 @@ flowchart TD
     B --> F[("SQLite<br/>modernc")]
     F --> G["Docker + gopsutil<br/>optional runtime, system metrics"]
 ```
-
-GitHub renders this Mermaid block natively, so it shows up as an actual diagram — not ASCII art — right on the repo page.
 
 ---
 
