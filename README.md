@@ -1,62 +1,112 @@
-# KATHAL OS 🍈
+<div align="center">
 
-**Portable, self-hosted OS with a web dashboard — runs on Windows, Linux, and Mac.**
+<img src="https://img.shields.io/badge/KATHAL-OS-2ea44f?style=for-the-badge" alt="KATHAL OS" />
 
-Like CasaOS, but simpler. One binary, one browser tab, manage everything.
+# 🍈 KATHAL OS
 
-## Quick Start
+### Portable, self-hosted OS with a web dashboard
 
-### Docker (any platform)
+**Runs on Windows, Linux, and Mac — like CasaOS, but simpler.**
+*One binary, one browser tab, manage everything.*
+
+<p>
+<img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
+<img src="https://img.shields.io/badge/go-1.22%2B-00ADD8?style=flat-square&logo=go&logoColor=white" />
+<img src="https://img.shields.io/badge/node-18%2B-339933?style=flat-square&logo=node.js&logoColor=white" />
+<img src="https://img.shields.io/badge/docker-optional-2496ED?style=flat-square&logo=docker&logoColor=white" />
+<img src="https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Docker-lightgrey?style=flat-square" />
+</p>
+
+<p>
+<a href="https://github.com/Kathal-OS/kathal"><b>Repository</b></a> •
+<a href="https://github.com/Kathal-OS/kathal/issues"><b>Issues</b></a> •
+<a href="https://github.com/Kathal-OS/kathal/discussions"><b>Discussions</b></a> •
+<a href="https://github.com/Kathal-OS/kathal/releases"><b>Releases</b></a> •
+<a href="https://github.com/Kathal-OS/kathal/pkgs/container/kathal"><b>Docker Images</b></a>
+</p>
+
+</div>
+
+<br/>
+
+---
+
+## 📖 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Platform Support](#-platform-support)
+- [Development](#-development)
+- [API Endpoints](#-api-endpoints)
+- [Configuration](#-configuration)
+- [Uninstall](#-uninstall)
+- [Links](#-links)
+- [License](#-license)
+
+---
+
+## ⚡ Quick Start
+
+### 🐳 Docker *(any platform)*
+
 ```bash
 docker run -d --name kathal --restart unless-stopped \
   -p 8080:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   ghcr.io/Kathal-OS/kathal:latest
 ```
-Open http://localhost:8080
 
-### Linux (Ubuntu/Debian/Fedora/Arch)
+Open **http://localhost:8080**
+
+### 🐧 Linux *(Ubuntu / Debian / Fedora / Arch)*
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Kathal-OS/kathal/master/scripts/install.sh | sudo bash
 ```
 
-### macOS
+### 🍎 macOS
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Kathal-OS/kathal/master/scripts/install-mac.sh | bash
 ```
 
-### Windows
+### 🪟 Windows
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-### Login
-- Email: `admin@kathal.local`
-- Password: `kathal`
+### 🔑 Login
 
-## Features
+| Field | Value |
+|:---|:---|
+| Email | `admin@kathal.local` |
+| Password | `kathal` |
 
-- **Dashboard** — real-time CPU, RAM, disk, network metrics
-- **Container Management** — start/stop/restart/delete containers (Docker required)
-- **Image Browser** — view all Docker images
-- **App Store** — one-click deploy popular apps (Nginx, Postgres, Redis, etc.)
-- **JWT Authentication** — secure dashboard access
-- **System-Only Mode** — works without Docker for system monitoring
-- **Cross-Platform** — Windows, Linux, Mac, Docker
-- **Reverse Proxy** — auto SSL with Let's Encrypt + self-signed certs
-- **Database Management** — PostgreSQL, MySQL, MongoDB, Redis
-- **File Manager** — browse, upload, edit files
-- **Backup/Restore** — ZIP backup with export/import
-- **Service Templates** — 35+ pre-configured apps
-- **Git Deploy** — GitHub/GitLab webhook deployments
-- **Web Terminal** — xterm.js PTY terminal in browser
-- **Monitoring** — real-time metrics with history
-- **Logs** — centralized container log viewer
-- **Docker Compose** — visual YAML editor + deploy
-- **Environment Variables** — global + per-service
-- **Network/Volume Management** — Docker networks & volumes
+> ⚠️ Change the default credentials immediately after first login.
 
-## Architecture
+---
+
+## ✨ Features
+
+<div align="center">
+
+| | | |
+|:---|:---|:---|
+| 📊 **Dashboard** — real-time CPU, RAM, disk, network metrics | 🐳 **Container Management** — start / stop / restart / delete | 🖼️ **Image Browser** — view all Docker images |
+| 🛒 **App Store** — one-click deploy popular apps | 🔐 **JWT Authentication** — secure dashboard access | 🖥️ **System-Only Mode** — works without Docker |
+| 🌍 **Cross-Platform** — Windows, Linux, Mac, Docker | 🔀 **Reverse Proxy** — auto SSL via Let's Encrypt + self-signed | 🗄️ **Database Management** — Postgres, MySQL, MongoDB, Redis |
+| 📁 **File Manager** — browse, upload, edit files | 💾 **Backup / Restore** — ZIP export/import | 📦 **Service Templates** — 35+ pre-configured apps |
+| 🔗 **Git Deploy** — GitHub/GitLab webhook deployments | 💻 **Web Terminal** — xterm.js PTY in browser | 📈 **Monitoring** — real-time metrics with history |
+| 📜 **Logs** — centralized container log viewer | 🧩 **Docker Compose** — visual YAML editor + deploy | 🌐 **Network / Volume Management** |
+| ⚙️ **Environment Variables** — global + per-service | | |
+
+</div>
+
+---
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────┐
@@ -80,23 +130,35 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 └─────────────────────────────────────┘
 ```
 
-## Platform Support
+---
+
+## 🖥️ Platform Support
+
+<div align="center">
 
 | Platform | Docker | System Metrics | Installer | Auto-Start |
-|----------|--------|----------------|-----------|------------|
-| Linux    | ✅     | ✅              | ✅ bash   | ✅ systemd |
-| macOS    | ✅     | ✅              | ✅ bash   | ✅ launchd |
-| Windows  | ✅     | ✅              | ✅ PS1    | ⚠️ manual  |
-| Docker   | ✅     | ✅              | ✅        | ✅         |
+|:---|:---:|:---:|:---:|:---:|
+| 🐧 Linux    | ✅ | ✅ | ✅ bash | ✅ systemd |
+| 🍎 macOS    | ✅ | ✅ | ✅ bash | ✅ launchd |
+| 🪟 Windows  | ✅ | ✅ | ✅ PS1  | ⚠️ manual  |
+| 🐳 Docker   | ✅ | ✅ | ✅      | ✅         |
 
-## Development
+</div>
+
+---
+
+## 🛠️ Development
 
 ### Prerequisites
-- Go 1.22+
-- Node.js 18+
-- Docker (optional)
+
+<p>
+<img src="https://img.shields.io/badge/Go-1.22%2B-00ADD8?style=flat-square&logo=go&logoColor=white" />
+<img src="https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white" />
+<img src="https://img.shields.io/badge/Docker-optional-2496ED?style=flat-square&logo=docker&logoColor=white" />
+</p>
 
 ### Build
+
 ```bash
 # Backend
 go build -o kathal ./cmd/kathal
@@ -111,57 +173,134 @@ GOOS=windows GOARCH=amd64 go build -o kathal.exe ./cmd/kathal
 ```
 
 ### Run
+
 ```bash
 ./kathal
 # Open http://localhost:8080
 ```
 
-## API Endpoints
+---
+
+## 🔌 API Endpoints
+
+<details open>
+<summary><b>Auth</b></summary>
 
 | Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/api/v1/login` | No | Get JWT token |
-| GET | `/api/v1/status` | Yes | Cross-platform system status |
-| GET | `/api/v1/metrics` | Yes | CPU, RAM, disk, network metrics |
-| GET | `/api/v1/system` | Yes | System info |
-| GET | `/api/v1/containers` | Yes | List Docker containers |
-| POST | `/api/v1/containers/{id}/start` | Yes | Start container |
-| POST | `/api/v1/containers/{id}/stop` | Yes | Stop container |
-| POST | `/api/v1/containers/{id}/restart` | Yes | Restart container |
-| DELETE | `/api/v1/containers/{id}/delete` | Yes | Delete container |
-| GET | `/api/v1/images` | Yes | List Docker images |
-| GET | `/api/v1/apps` | Yes | List managed apps |
-| POST | `/api/v1/apps` | Yes | Create app |
-| GET | `/api/v1/proxy` | Yes | List proxy routes |
-| POST | `/api/v1/proxy` | Yes | Create proxy route |
-| GET | `/api/v1/databases` | Yes | List databases |
-| POST | `/api/v1/databases` | Yes | Create database |
-| GET | `/api/v1/files` | Yes | List files |
-| GET | `/api/v1/backups` | Yes | List backups |
-| POST | `/api/v1/backups` | Yes | Create backup |
-| GET | `/api/v1/templates` | Yes | List service templates |
-| GET | `/api/v1/git/repos` | Yes | List git repos |
-| POST | `/api/v1/git/repos` | Yes | Add git repo |
-| GET | `/api/v1/monitoring/current` | Yes | Current metrics |
-| GET | `/api/v1/monitoring/history` | Yes | Metrics history |
-| GET | `/api/v1/logs/containers` | Yes | List log containers |
-| GET | `/api/v1/logs` | Yes | Get container logs |
-| GET | `/api/v1/compose` | Yes | List compose projects |
-| GET | `/api/v1/env` | Yes | List env vars |
-| GET | `/api/v1/network` | Yes | List networks |
-| GET | `/api/v1/volumes` | Yes | List volumes |
+|:---|:---|:---:|:---|
+| `POST` | `/api/v1/login` | No | Get JWT token |
 
-## Configuration
+</details>
+
+<details open>
+<summary><b>System</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/status` | Yes | Cross-platform system status |
+| `GET` | `/api/v1/metrics` | Yes | CPU, RAM, disk, network metrics |
+| `GET` | `/api/v1/system` | Yes | System info |
+
+</details>
+
+<details open>
+<summary><b>Containers & Images</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/containers` | Yes | List Docker containers |
+| `POST` | `/api/v1/containers/{id}/start` | Yes | Start container |
+| `POST` | `/api/v1/containers/{id}/stop` | Yes | Stop container |
+| `POST` | `/api/v1/containers/{id}/restart` | Yes | Restart container |
+| `DELETE` | `/api/v1/containers/{id}/delete` | Yes | Delete container |
+| `GET` | `/api/v1/images` | Yes | List Docker images |
+
+</details>
+
+<details open>
+<summary><b>Apps & Templates</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/apps` | Yes | List managed apps |
+| `POST` | `/api/v1/apps` | Yes | Create app |
+| `GET` | `/api/v1/templates` | Yes | List service templates |
+
+</details>
+
+<details open>
+<summary><b>Networking & Proxy</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/proxy` | Yes | List proxy routes |
+| `POST` | `/api/v1/proxy` | Yes | Create proxy route |
+| `GET` | `/api/v1/network` | Yes | List networks |
+| `GET` | `/api/v1/volumes` | Yes | List volumes |
+
+</details>
+
+<details open>
+<summary><b>Databases & Files</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/databases` | Yes | List databases |
+| `POST` | `/api/v1/databases` | Yes | Create database |
+| `GET` | `/api/v1/files` | Yes | List files |
+
+</details>
+
+<details open>
+<summary><b>Backups & Git Deploy</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/backups` | Yes | List backups |
+| `POST` | `/api/v1/backups` | Yes | Create backup |
+| `GET` | `/api/v1/git/repos` | Yes | List git repos |
+| `POST` | `/api/v1/git/repos` | Yes | Add git repo |
+
+</details>
+
+<details open>
+<summary><b>Monitoring & Logs</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/monitoring/current` | Yes | Current metrics |
+| `GET` | `/api/v1/monitoring/history` | Yes | Metrics history |
+| `GET` | `/api/v1/logs/containers` | Yes | List log containers |
+| `GET` | `/api/v1/logs` | Yes | Get container logs |
+
+</details>
+
+<details open>
+<summary><b>Compose & Environment</b></summary>
+
+| Method | Path | Auth | Description |
+|:---|:---|:---:|:---|
+| `GET` | `/api/v1/compose` | Yes | List compose projects |
+| `GET` | `/api/v1/env` | Yes | List env vars |
+
+</details>
+
+---
+
+## ⚙️ Configuration
 
 ### Environment Variables
+
 | Variable | Default | Description |
-|----------|---------|-------------|
+|:---|:---|:---|
 | `KATHAL_PORT` | `8080` | HTTP server port |
 | `KATHAL_DB` | `./kathal.db` | SQLite database path |
 | `KATHAL_ADDR` | `:8080` | Listen address |
 
 ### Config File
+
 Create `config.json`:
+
 ```json
 {
   "port": 8080,
@@ -170,9 +309,13 @@ Create `config.json`:
 }
 ```
 
-## Uninstall
+---
 
-### Linux
+## 🗑️ Uninstall
+
+<details>
+<summary><b>🐧 Linux</b></summary>
+
 ```bash
 sudo systemctl stop kathal
 sudo systemctl disable kathal
@@ -180,26 +323,50 @@ sudo rm /etc/systemd/system/kathal.service
 sudo rm -rf /opt/kathal /etc/kathal /var/lib/kathal
 ```
 
-### macOS
+</details>
+
+<details>
+<summary><b>🍎 macOS</b></summary>
+
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.kathal.dashboard.plist
 rm ~/Library/LaunchAgents/com.kathal.dashboard.plist
 rm -rf ~/.kathal
 ```
 
-### Windows
+</details>
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
 ```powershell
 Remove-Item -Recurse "$env:LOCALAPPDATA\kathal"
 ```
 
-## Links
+</details>
 
-- **Official Repository**: https://github.com/Kathal-OS/kathal
-- **Issues**: https://github.com/Kathal-OS/kathal/issues
-- **Discussions**: https://github.com/Kathal-OS/kathal/discussions
-- **Releases**: https://github.com/Kathal-OS/kathal/releases
-- **Docker Images**: https://github.com/Kathal-OS/kathal/pkgs/container/kathal
+---
 
-## License
+## 🔗 Links
 
-MIT — Built for the community.
+<div align="center">
+
+<a href="https://github.com/Kathal-OS/kathal"><img src="https://img.shields.io/badge/Repository-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/kathal/issues"><img src="https://img.shields.io/badge/Issues-red?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/kathal/discussions"><img src="https://img.shields.io/badge/Discussions-blue?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/kathal/releases"><img src="https://img.shields.io/badge/Releases-green?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://github.com/Kathal-OS/kathal/pkgs/container/kathal"><img src="https://img.shields.io/badge/Docker%20Images-2496ED?style=for-the-badge&logo=docker&logoColor=white" /></a>
+
+</div>
+
+---
+
+## 📄 License
+
+<div align="center">
+
+**MIT** — Built for the community.
+
+🍈 **KATHAL OS**
+
+</div>
