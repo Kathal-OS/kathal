@@ -25,9 +25,9 @@ import (
 type Database struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	Type      string `json:"type"`      // postgres, mysql, mongodb, redis
-	Status    string `json:"status"`    // running, stopped, unknown
-	Port      int    `json:"port"`      // host port
+	Type      string `json:"type"`   // postgres, mysql, mongodb, redis
+	Status    string `json:"status"` // running, stopped, unknown
+	Port      int    `json:"port"`   // host port
 	User      string `json:"user"`
 	Password  string `json:"password"`
 	CreatedAt string `json:"created_at"`

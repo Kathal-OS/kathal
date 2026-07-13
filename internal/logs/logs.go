@@ -16,10 +16,10 @@ type Manager struct {
 }
 
 type LogBuffer struct {
-	ContainerID    string    `json:"container_id"`
-	ContainerName  string    `json:"container_name"`
-	Lines          []LogLine `json:"lines"`
-	mu             sync.Mutex
+	ContainerID   string    `json:"container_id"`
+	ContainerName string    `json:"container_name"`
+	Lines         []LogLine `json:"lines"`
+	mu            sync.Mutex
 }
 
 type LogLine struct {

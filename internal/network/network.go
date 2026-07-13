@@ -19,20 +19,20 @@ type Manager struct {
 
 // NetworkInfo represents a Docker network
 type NetworkInfo struct {
-	ID           string            `json:"id"`
-	Name         string            `json:"name"`
-	Driver       string            `json:"driver"`
-	Scope        string            `json:"scope"`
-	EnableIPv6   bool              `json:"enable_ipv6"`
-	IPAM         interface{}       `json:"ipam,omitempty"`
-	Containers   []string          `json:"containers"`
-	Labels       map[string]string `json:"labels"`
-	CreatedAt    string            `json:"created_at"`
-	Internal     bool              `json:"internal"`
-	Attachable   bool              `json:"attachable"`
-	Ingress      bool              `json:"ingress"`
-	ConfigFrom   string            `json:"config_from,omitempty"`
-	ConfigOnly   bool              `json:"config_only"`
+	ID         string            `json:"id"`
+	Name       string            `json:"name"`
+	Driver     string            `json:"driver"`
+	Scope      string            `json:"scope"`
+	EnableIPv6 bool              `json:"enable_ipv6"`
+	IPAM       interface{}       `json:"ipam,omitempty"`
+	Containers []string          `json:"containers"`
+	Labels     map[string]string `json:"labels"`
+	CreatedAt  string            `json:"created_at"`
+	Internal   bool              `json:"internal"`
+	Attachable bool              `json:"attachable"`
+	Ingress    bool              `json:"ingress"`
+	ConfigFrom string            `json:"config_from,omitempty"`
+	ConfigOnly bool              `json:"config_only"`
 }
 
 // VolumeInfo represents a Docker volume
@@ -57,14 +57,14 @@ type VolumeCreateRequest struct {
 
 // NetworkCreateRequest represents a request to create a network
 type NetworkCreateRequest struct {
-	Name         string              `json:"name"`
-	Driver       string              `json:"driver"`
-	Internal     bool                `json:"internal"`
-	Attachable   bool                `json:"attachable"`
-	Ingress      bool                `json:"ingress"`
-	EnableIPv6   bool                `json:"enable_ipv6"`
-	IPAM         interface{}         `json:"ipam,omitempty"`
-	Labels       map[string]string   `json:"labels"`
+	Name       string            `json:"name"`
+	Driver     string            `json:"driver"`
+	Internal   bool              `json:"internal"`
+	Attachable bool              `json:"attachable"`
+	Ingress    bool              `json:"ingress"`
+	EnableIPv6 bool              `json:"enable_ipv6"`
+	IPAM       interface{}       `json:"ipam,omitempty"`
+	Labels     map[string]string `json:"labels"`
 }
 
 // NewManager creates a new network manager

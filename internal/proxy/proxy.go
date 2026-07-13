@@ -31,11 +31,11 @@ import (
 type Route struct {
 	ID          string `json:"id"`
 	Domain      string `json:"domain"`      // e.g. "app.example.com"
-	Path        string `json:"path"`         // e.g. "/" (prefix match)
-	Target      string `json:"target"`       // e.g. "http://localhost:3000" or "container-name:80"
-	Certificate string `json:"certificate"`  // path to cert.pem (empty = auto SSL)
-	Key         string `json:"key"`          // path to key.pem (empty = auto SSL)
-	AutoSSL     bool   `json:"auto_ssl"`     // use Let's Encrypt
+	Path        string `json:"path"`        // e.g. "/" (prefix match)
+	Target      string `json:"target"`      // e.g. "http://localhost:3000" or "container-name:80"
+	Certificate string `json:"certificate"` // path to cert.pem (empty = auto SSL)
+	Key         string `json:"key"`         // path to key.pem (empty = auto SSL)
+	AutoSSL     bool   `json:"auto_ssl"`    // use Let's Encrypt
 	Enabled     bool   `json:"enabled"`
 	CreatedAt   string `json:"created_at"`
 	StripPrefix bool   `json:"strip_prefix"` // strip path prefix before forwarding

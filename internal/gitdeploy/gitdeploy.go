@@ -48,8 +48,8 @@ type DeployResult struct {
 
 // DeployLog is a persisted record of a deployment attempt.
 type DeployLog struct {
-	Result    DeployResult `json:"result"`
-	Success   bool         `json:"success"`
+	Result  DeployResult `json:"result"`
+	Success bool         `json:"success"`
 }
 
 // WebhookPayload is a simplified representation of GitHub/GitLab push payloads.
@@ -63,15 +63,15 @@ type WebhookPayload struct {
 
 // store is the on-disk representation of all managed state.
 type store struct {
-	Repos   []*Repo      `json:"repos"`
+	Repos   []*Repo                 `json:"repos"`
 	History map[string][]*DeployLog `json:"history"`
 }
 
 // Manager coordinates Git deployments for registered repositories.
 type Manager struct {
-	dataDir  string
-	store    store
-	mu       sync.RWMutex
+	dataDir string
+	store   store
+	mu      sync.RWMutex
 }
 
 // NewManager creates a Manager that persists data to dataDir.

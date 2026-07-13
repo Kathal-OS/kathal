@@ -11,10 +11,10 @@ import (
 	"github.com/bakeweb/kathal-os/internal/docker"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/load"
 	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/net"
-	"github.com/shirou/gopsutil/v3/host"
 )
 
 // Collector gathers system and Docker metrics.
@@ -26,15 +26,15 @@ type Collector struct {
 
 // SystemMetrics holds system resource usage.
 type SystemMetrics struct {
-	CPU       float64       `json:"cpu"`
-	CPUCores  int           `json:"cpuCores"`
-	Memory    MemoryMetrics `json:"memory"`
-	Disk      DiskMetrics   `json:"disk"`
+	CPU       float64        `json:"cpu"`
+	CPUCores  int            `json:"cpuCores"`
+	Memory    MemoryMetrics  `json:"memory"`
+	Disk      DiskMetrics    `json:"disk"`
 	Network   NetworkMetrics `json:"network"`
-	Load      LoadMetrics   `json:"load"`
-	Uptime    uint64        `json:"uptime"`
-	GoVersion string        `json:"goVersion"`
-	Platform  string        `json:"platform"`
+	Load      LoadMetrics    `json:"load"`
+	Uptime    uint64         `json:"uptime"`
+	GoVersion string         `json:"goVersion"`
+	Platform  string         `json:"platform"`
 }
 
 // MemoryMetrics holds memory usage.

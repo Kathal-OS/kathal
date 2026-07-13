@@ -23,12 +23,12 @@ type Manager struct {
 }
 
 type SystemSample struct {
-	Timestamp    time.Time         `json:"timestamp"`
-	CPU          *CPUInfo          `json:"cpu"`
-	Memory       *MemoryInfo       `json:"memory"`
-	Disk         *DiskInfo         `json:"disk"`
-	Network      *NetworkInfo      `json:"network"`
-	Containers   []*ContainerStats `json:"containers"`
+	Timestamp  time.Time         `json:"timestamp"`
+	CPU        *CPUInfo          `json:"cpu"`
+	Memory     *MemoryInfo       `json:"memory"`
+	Disk       *DiskInfo         `json:"disk"`
+	Network    *NetworkInfo      `json:"network"`
+	Containers []*ContainerStats `json:"containers"`
 }
 
 type CPUInfo struct {

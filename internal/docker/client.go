@@ -71,20 +71,20 @@ type Status struct {
 
 // Network represents a Docker network
 type Network struct {
-	ID           string            `json:"Id"`
-	Name         string            `json:"Name"`
-	Driver       string            `json:"Driver"`
-	Scope        string            `json:"Scope"`
-	EnableIPv6   bool              `json:"EnableIPv6"`
-	IPAM         IPAM              `json:"IPAM"`
-	Containers   map[string]NetworkContainer `json:"Containers"`
-	Labels       map[string]string `json:"Labels"`
-	Created      string            `json:"Created"`
-	Internal     bool              `json:"Internal"`
-	Attachable   bool              `json:"Attachable"`
-	Ingress      bool              `json:"Ingress"`
-	ConfigFrom   NetworkConfigRef  `json:"ConfigFrom"`
-	ConfigOnly   bool              `json:"ConfigOnly"`
+	ID         string                      `json:"Id"`
+	Name       string                      `json:"Name"`
+	Driver     string                      `json:"Driver"`
+	Scope      string                      `json:"Scope"`
+	EnableIPv6 bool                        `json:"EnableIPv6"`
+	IPAM       IPAM                        `json:"IPAM"`
+	Containers map[string]NetworkContainer `json:"Containers"`
+	Labels     map[string]string           `json:"Labels"`
+	Created    string                      `json:"Created"`
+	Internal   bool                        `json:"Internal"`
+	Attachable bool                        `json:"Attachable"`
+	Ingress    bool                        `json:"Ingress"`
+	ConfigFrom NetworkConfigRef            `json:"ConfigFrom"`
+	ConfigOnly bool                        `json:"ConfigOnly"`
 }
 
 type NetworkContainer struct {
@@ -96,9 +96,9 @@ type NetworkContainer struct {
 }
 
 type IPAM struct {
-	Driver  string     `json:"Driver"`
+	Driver  string            `json:"Driver"`
 	Options map[string]string `json:"Options"`
-	Config  []IPAMConfig `json:"Config"`
+	Config  []IPAMConfig      `json:"Config"`
 }
 
 type IPAMConfig struct {
@@ -123,12 +123,12 @@ type Volume struct {
 }
 
 type VolumeUsageData struct {
-	Size           int64 `json:"Size"`
-	RefCount       int   `json:"RefCount"`
+	Size     int64 `json:"Size"`
+	RefCount int   `json:"RefCount"`
 }
 
 type VolumeListResponse struct {
-	Volumes []Volume `json:"Volumes"`
+	Volumes  []Volume `json:"Volumes"`
 	Warnings []string `json:"Warnings"`
 }
 
@@ -173,10 +173,10 @@ func NewClient() *Client {
 				Timeout:   5 * time.Second,
 				KeepAlive: 30 * time.Second,
 			}).DialContext,
-			DialTLSContext: nil,
+			DialTLSContext:        nil,
 			MaxIdleConns:          100,
 			IdleConnTimeout:       90 * time.Second,
-			TLSHandshakeTimeout:  5 * time.Second,
+			TLSHandshakeTimeout:   5 * time.Second,
 			ResponseHeaderTimeout: 10 * time.Second,
 			// Custom dialer for Unix socket.
 			Dial: func(network, addr string) (net.Conn, error) {
@@ -275,12 +275,12 @@ func (c *Client) ListContainers(ctx context.Context, all bool) ([]Container, err
 	defer resp.Body.Close()
 
 	var raw []struct {
-		ID      string            `json:"Id"`
-		Names   []string          `json:"Names"`
-		Image   string            `json:"Image"`
-		State   string            `json:"State"`
-		Status  string            `json:"Status"`
-		Ports   []struct {
+		ID     string   `json:"Id"`
+		Names  []string `json:"Names"`
+		Image  string   `json:"Image"`
+		State  string   `json:"State"`
+		Status string   `json:"Status"`
+		Ports  []struct {
 			PrivatePort int    `json:"PrivatePort"`
 			PublicPort  int    `json:"PublicPort"`
 			Type        string `json:"Type"`

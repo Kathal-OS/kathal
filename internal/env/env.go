@@ -36,9 +36,9 @@ type EnvVar struct {
 	Key         string    `json:"key"`
 	Value       string    `json:"value"`
 	Scope       EnvScope  `json:"scope"`
-	Target      string    `json:"target"`       // container ID or service name
+	Target      string    `json:"target"` // container ID or service name
 	Description string    `json:"description"`
-	Secret      bool      `json:"secret"`       // If true, value is hidden in UI
+	Secret      bool      `json:"secret"` // If true, value is hidden in UI
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

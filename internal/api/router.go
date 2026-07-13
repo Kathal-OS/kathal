@@ -1265,7 +1265,7 @@ func handleGetLogs(deps Deps) http.HandlerFunc {
 			fmt.Sscanf(t, "%d", &tail)
 		}
 		filter := r.URL.Query().Get("filter")
-		
+
 		ctx := r.Context()
 		logs, err := deps.Logs.GetLogs(ctx, logs.LogQuery{
 			ContainerID: containerID,

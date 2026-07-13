@@ -17,21 +17,21 @@ import (
 
 // Manager handles Docker Compose operations
 type Manager struct {
-	cli       *client.Client
-	mu        sync.RWMutex
-	projects  map[string]*Project
-	workDir   string
+	cli      *client.Client
+	mu       sync.RWMutex
+	projects map[string]*Project
+	workDir  string
 }
 
 // Project represents a Docker Compose project
 type Project struct {
-	Name        string
-	Config      *types.Config
-	WorkingDir  string
-	Status      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Services    []ServiceStatus
+	Name       string
+	Config     *types.Config
+	WorkingDir string
+	Status     string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	Services   []ServiceStatus
 }
 
 // ServiceStatus represents the status of a compose service
@@ -239,7 +239,7 @@ func (m *Manager) loadConfig(path string) (*types.Config, error) {
 
 func (m *Manager) loadConfigFromBytes(content []byte) (*types.Config, error) {
 	ctx := context.Background()
-	
+
 	// Write to temp file and load using loader
 	tmpFile := filepath.Join(os.TempDir(), "docker-compose-*.yml")
 	if err := os.WriteFile(tmpFile, content, 0644); err != nil {
