@@ -38,11 +38,11 @@ jobs:
       - name: Build
         run: |
           go mod tidy
-          go build -ldflags="-s -w" -o kathal.exe ./cmd/kathal/
+          CGO_ENABLED=0 go build -ldflags="-s -w" -o kathal ./cmd/kathal/
       - name: Verify binary
         run: |
-          ls -la kathal.exe
-          file kathal.exe
+          ls -la kathal
+          file kathal
 
   test:
     name: Tests
